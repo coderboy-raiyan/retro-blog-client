@@ -1,15 +1,8 @@
-import { cookies } from "next/headers";
+import { userService } from "@/services/user/user.service";
 
 async function Home() {
-  const cookieStore = await cookies();
-  const res = await fetch("http://localhost:5000/api/auth/get-session", {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-    cache: "no-store",
-  });
-  const session = await res.json();
-  console.log(session);
+  const { data } = await userService.getSession();
+  console.log(data);
   return <div>Home</div>;
 }
 
