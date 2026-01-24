@@ -37,6 +37,11 @@ const blogServices = {
       return { data: null, error: error?.message || "Something went wrong!" };
     }
   },
+  getBlogById: async (id: string) => {
+    const res = await fetch(`${APP_URL}/${id}`);
+    const data = await res.json();
+    return data;
+  },
 };
 
 export default blogServices;

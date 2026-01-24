@@ -5,7 +5,7 @@ function CommonLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navbar />
-      {children}
+      <main className="pt-16 md:pt-20">{children}</main>
     </>
   );
 }
