@@ -37,8 +37,21 @@ const blogServices = {
       return { data: null, error: error?.message || "Something went wrong!" };
     }
   },
-  getBlogById: async (id: string) => {
-    const res = await fetch(`${APP_URL}/${id}`);
+  getBlogById: async (
+    id: string,
+    options?: { cache?: RequestCache; revalidate?: number },
+  ) => {
+    const config: RequestInit = {};
+
+    if (options?.cache) {
+      config.cache = options?.cache;
+    }
+
+    if (options?.revalidate) {
+      config.next = { revalidate: options?.revalidate };
+    }
+
+    const res = await fetch(`${APP_URL}/${id}`, config);
     const data = await res.json();
     return data;
   },

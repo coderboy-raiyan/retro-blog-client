@@ -35,7 +35,7 @@ export async function generateStaticParams() {
 
 async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const response = await blogServices.getBlogById(id);
+  const response = await blogServices.getBlogById(id, { revalidate: 10 });
   const blog: TBlog = response?.data;
 
   if (!blog) {
