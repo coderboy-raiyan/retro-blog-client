@@ -25,11 +25,19 @@ function calculateReadTime(content: string) {
   return `${minutes} min read`;
 }
 
+export async function generateStaticParams() {
+  const { data } = await blogServices.getBlogPosts();
+
+  return data?.data.map((blog: TBlog) => ({
+    id: blog.id,
+  }));
+}
+
 async function BlogPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const response = await blogServices.getBlogById(id);
   const blog: TBlog = response?.data;
-  console.log(blog);
+
   if (!blog) {
     notFound();
   }
