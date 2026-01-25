@@ -6,7 +6,7 @@ const userRoutes: TRoute[] = [
     items: [
       {
         title: "Create Blog",
-        url: "/dashboard",
+        url: "/dashboard/create-blog",
       },
     ],
   },
