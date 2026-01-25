@@ -8,16 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 
 import { useForm } from "@tanstack/react-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 const formSchema = z.object({
   email: z.email(),
-  name: z.string({ error: "This field is required" }),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  name: z.string().min(1, "This field is required"),
+  password: z.string().min(8, "Password must be at least 6 characters"),
 });
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const form = useForm({
@@ -30,7 +37,18 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      const toaster = toast.loading("Please wait...");
+      try {
+        const { data, error } = await authClient.signUp.email(value);
+        if (error) {
+          toast.error(error?.message, { id: toaster });
+          return;
+        }
+        toast.success("Signed up successfully", { id: toaster });
+        console.log(data);
+      } catch (error: any) {
+        toast.error(error?.message, { id: toaster });
+      }
     },
   });
   return (
@@ -52,45 +70,66 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           <FieldGroup>
             <form.Field
               name="name"
-              children={(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field?.name}>Name</FieldLabel>
-                  <Input
-                    type="text"
-                    id={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                </Field>
-              )}
+              children={(field) => {
+                const isInValid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field>
+                    <FieldLabel htmlFor={field?.name}>Name</FieldLabel>
+                    <Input
+                      type="text"
+                      id={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInValid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
             />
             <form.Field
               name="email"
-              children={(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field?.name}>Email</FieldLabel>
-                  <Input
-                    type="email"
-                    id={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                </Field>
-              )}
+              children={(field) => {
+                const isInValid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field>
+                    <FieldLabel htmlFor={field?.name}>Email</FieldLabel>
+                    <Input
+                      type="email"
+                      id={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInValid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
             />
             <form.Field
               name="password"
-              children={(field) => (
-                <Field>
-                  <FieldLabel htmlFor={field?.name}>Password</FieldLabel>
-                  <Input
-                    type="password"
-                    id={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                  />
-                </Field>
-              )}
+              children={(field) => {
+                const isInValid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <Field>
+                    <FieldLabel htmlFor={field?.name}>Password</FieldLabel>
+                    <Input
+                      type="password"
+                      id={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                    />
+                    {isInValid && (
+                      <FieldError errors={field.state.meta.errors} />
+                    )}
+                  </Field>
+                );
+              }}
             />
           </FieldGroup>
         </form>
